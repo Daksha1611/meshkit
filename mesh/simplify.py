@@ -37,7 +37,7 @@ class Simplifier:
     a single simplifier produces a whole LOD chain.
     """
 
-    def __init__(self, V, F, boundary_weight=1000.0, check_flips=True, flip_threshold=0.2,
+    def __init__(self, V, F, boundary_weight=1000.0, check_flips=True, flip_threshold=0.0,
                  area_weighted=True, placement="optimal"):
         self.V = np.array(V, dtype=np.float64, copy=True)
         self.F = np.array(F, dtype=np.int64, copy=True)   # changed in place by collapses
