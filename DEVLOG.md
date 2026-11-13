@@ -128,3 +128,25 @@ In my renderer (Rz·Ry·Rx, camera looking down -z, y up) a +90° turn about x b
 
 **Run time.** 346 s in total on my laptop, 93 s of it before the ablation study
 (the ablations re-run the full bunny simplification 8 times).
+
+## 2026-11-13: First CI run, results reproduce exactly but every PNG "changed"
+
+**What happened.** The first push to GitHub triggered `results.yml`, which re-ran all the
+experiments on a GitHub runner (NumPy 2.4.6, SciPy 1.17.1; my laptop has NumPy 2.5.4,
+SciPy 1.18.1) and opened pull request #1. Its body said 0 numbers changed in
+`summary.json` (only timings differ), but it listed all 54 PNG files as changed.
+
+**How I found the cause.** I downloaded two of the CI images and compared them with mine
+pixel by pixel: 0 pixels differ. Only the compressed bytes differ (the runner's zlib
+compresses differently), so GitHub would have shown 54 "changed" images that look identical.
+The good news hidden in this: every error figure, triangle count and file size came out
+exactly the same on a different machine with different library versions.
+
+**Fix.** `scripts/summary_diff.py` now compares changed PNGs with the committed version
+pixel by pixel and restores the ones that only differ in bytes, and it tells the workflow
+whether anything besides timings changed. `results.yml` opens a pull request only in that
+case, and a run started on a branch other than main gets its own PR branch
+(`auto/update-results-<branch>`), so a demo run cannot overwrite the main one.
+Tested locally: the CI copy of `A1_fold_check.png` is restored and reported as unchanged;
+a copy with a painted square is reported as changed. PR #1 was closed because it contained
+no visible change.

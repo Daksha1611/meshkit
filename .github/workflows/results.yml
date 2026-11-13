@@ -33,11 +33,17 @@ jobs:
         run: python run_experiments.py
 
       - name: Write the pull request body
+        id: diff
         run: python scripts/summary_diff.py "$RUNNER_TEMP/old_summary.json" results/summary.json > "$RUNNER_TEMP/pr_body.md"
 
-      - uses: peter-evans/create-pull-request@v6
+      # Only open a pull request if an image or a number changed; timings
+      # alone differ on every machine and are not worth a review.
+      - if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
         with:
-          branch: auto/update-results
+          # main uses auto/update-results; a run started on another branch gets
+          # its own PR branch so the two never overwrite each other.
+          branch: ${{ github.ref_name == 'main' && 'auto/update-results' || format('auto/update-results-{0}', github.ref_name) }}
           title: Update results after code change
           commit-message: Update results after code change
           body-path: ${{ runner.temp }}/pr_body.md
