@@ -122,7 +122,7 @@ python meshkit.py subdivide out/bunny_2.obj -o out/bunny_smooth.obj --levels 2
 python meshkit.py render out/bunny_2.obj -o out/bunny_2.png --wire
 
 python -m pytest -q tests          # 26 tests
-python run_experiments.py          # regenerates results/ and docs/data (about 6 minutes)
+python run_experiments.py          # regenerates results/ and docs/data (several minutes)
 ```
 
 The simplify command prints, for example:

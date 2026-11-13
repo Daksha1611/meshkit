@@ -136,7 +136,8 @@ All of these are in [DEVLOG.md](DEVLOG.md) with more detail.
 - **Loop subdivision shrinks shapes.** It approximates rather than interpolates: after simplifying the
   bunny to 1%, two Loop levels raise the mean error from 0.156% to 0.352%.
 - **Speed.** It is pure Python plus NumPy: running the bunny down through all seven levels of detail
-  took 19.6 s on my laptop, and the main loop handles one collapse at a time in Python.
+  takes tens of seconds on my laptop (`bunny_lod_cumulative_seconds` in `results/summary.json`;
+  it varies with machine load), because the main loop handles one collapse at a time in Python.
 - **No colour or texture.** Only geometry is preserved.
 - **Next:** Catmull–Clark subdivision for quad meshes; progressive meshes (Hoppe 1996) for streaming
   LOD; colour-aware quadrics (Garland & Heckbert 1998); a C++ or Numba port of the main loop.
