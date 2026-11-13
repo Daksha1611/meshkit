@@ -46,9 +46,9 @@
         {
           "label": "2%",
           "file": "models/bunny_2pct.obj",
-          "triangles": 1389,
+          "triangles": 1388,
           "kb": 41,
-          "mean_error_pct": 0.08,
+          "mean_error_pct": 0.079,
           "kept_pct": 2.0
         },
         {
@@ -56,15 +56,15 @@
           "file": "models/bunny_1pct.obj",
           "triangles": 695,
           "kb": 21,
-          "mean_error_pct": 0.156,
+          "mean_error_pct": 0.155,
           "kept_pct": 1.0
         },
         {
           "label": "0.5%",
           "file": "models/bunny_0.5pct.obj",
-          "triangles": 346,
+          "triangles": 347,
           "kb": 10,
-          "mean_error_pct": 0.3,
+          "mean_error_pct": 0.298,
           "kept_pct": 0.5
         }
       ]
