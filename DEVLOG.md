@@ -45,3 +45,29 @@ fold check and 3 in the link condition; the reference run reported about 22,000 
 1,100. My simplifier drops an edge after rejecting it and only re-costs it when one of its
 two vertices changes, so the same bad edge is not popped again and again. The final meshes
 are still valid (Euler 2, no degenerate faces), so I am reporting my own counts.
+
+## 2026-11-13: Phase 4, centroid lookup gives fake errors on Fandisk
+
+**What happened.** The plan warned that a distance based only on the 16 triangles with
+the nearest centroids can be badly wrong on CAD models, so I wrote `point_to_surface`
+with a second bound from the start, then tested what the centroid lookup alone would have
+reported. On the simplified Fandisk it gives a max error of 8.9% of the diagonal for a
+mesh whose real max error is 0.3%.
+
+**How I found it.** I measured each Fandisk level twice, once with the centroid lookup alone
+and once also using a second bound (distance to the nearest of 300,000 random points on
+the surface), and printed the shape of the simplified triangles. Simplifying the large flat
+CAD faces leaves long, thin triangles (worst aspect ratio 460 at 20%; median 2.6). The
+centroid of such a triangle is far from the parts of it near the query point, so the
+right triangle is not among the 16 candidates and the distance is overestimated.
+
+**Fix.** Return the minimum of the two upper bounds.
+
+| Fandisk | centroid only (mean / max) | both bounds (mean / max) |
+|---|---|---|
+| 20% | 0.113% / 8.866% | 0.006% / 0.293% |
+| 5% | 0.113% / 8.630% | 0.011% / 0.282% |
+| 2% | 0.076% / 6.490% | 0.027% / 0.437% |
+
+Sanity checks after the fix: Spot against itself gives a mean of about 1e-15%; a copy
+shifted by 1% of the diagonal gives a max of 1.000% and a mean of 0.530%.
