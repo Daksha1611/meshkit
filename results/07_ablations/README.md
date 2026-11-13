@@ -11,7 +11,7 @@ nearest original face). This file is written by `run_experiments.py`.
 
 | variant | triangles | mean error % | max error % | flipped faces % | rejected flip |
 |---|---|---|---|---|---|
-| fold check on | 695 | 0.156 | 1.071 | 0.29 | 179 |
+| fold check on | 695 | 0.156 | 1.288 | 0.29 | 179 |
 | fold check off | 694 | 0.148 | 1.084 | 2.59 | 0 |
 
 Without the fold check, 2.59% of the faces end up turned over, against
@@ -26,7 +26,7 @@ nothing. That is why the fold check compares normals instead of distances.
 
 | variant | triangles | mean error % | max error % | flipped faces % | boundary edges | boundary length vs original % |
 |---|---|---|---|---|---|---|
-| boundary weight 1000 | 1389 | 0.079 | 0.675 | 0.29 | 131 | 101.2 |
+| boundary weight 1000 | 1389 | 0.08 | 0.675 | 0.29 | 131 | 101.2 |
 | boundary weight 0 | 1389 | 0.085 | 4.375 | 0.07 | 33 | 112.6 |
 
 With weight 0 nothing stops the rim vertices of the holes from sliding, so the holes in the base
@@ -41,14 +41,14 @@ the rim stays at 101.2% of its original length.
 
 | variant | triangles | mean error % | max error % | flipped faces % |
 |---|---|---|---|---|
-| area weighting on | 116 | 0.618 | 5.088 | 0.0 |
-| area weighting off | 116 | 0.715 | 4.053 | 0.0 |
+| area weighting on | 116 | 0.595 | 4.984 | 0.86 |
+| area weighting off | 116 | 0.707 | 3.945 | 0.0 |
 
 With area weighting on, the horns disappear at 2%: they are built from many tiny triangles, and
 quadrics scaled by tiny areas make them cheap to remove. With it off every triangle counts the
 same, so the horns survive (visible as two spikes), but the large body pays for it: the mean
-error rises from 0.618% to 0.715% while the max error falls from
-5.088% to 4.053% (with weighting on, the worst point is at the horn tips).
+error rises from 0.595% to 0.707% while the max error falls from
+4.984% to 3.945% (with weighting on, the worst point is at the horn tips).
 
 ## A4: where the merged vertex goes (bunny 1%)
 
@@ -56,7 +56,7 @@ error rises from 0.618% to 0.715% while the max error falls from
 
 | variant | triangles | mean error % | max error % | flipped faces % | rejected flip |
 |---|---|---|---|---|---|
-| optimal | 695 | 0.156 | 1.071 | 0.29 | 179 |
+| optimal | 695 | 0.156 | 1.288 | 0.29 | 179 |
 | midpoint | 695 | 0.421 | 1.974 | 0.72 | 112 |
 | endpoint | 695 | 0.265 | 1.652 | 0.29 | 1026 |
 
@@ -73,8 +73,8 @@ curved surface the middle of an edge lies inside or outside the surface; the bet
 |---|---|---|---|---|---|
 | threshold -1 | 694 | 0.148 | 1.084 | 2.59 | 0 |
 | threshold 0 | 695 | 0.155 | 1.184 | 0.43 | 150 |
-| threshold 0.2 | 695 | 0.156 | 1.071 | 0.29 | 179 |
-| threshold 0.5 | 695 | 0.156 | 1.088 | 0.14 | 216 |
+| threshold 0.2 | 695 | 0.156 | 1.288 | 0.29 | 179 |
+| threshold 0.5 | 694 | 0.156 | 1.088 | 0.14 | 216 |
 
 A collapse is rejected when a face's normal turns so far that cos(old, new) falls below the
 threshold. Raising it from -1 (off) to 0.5 rejects 0 -> 216
@@ -87,9 +87,9 @@ while the mean error stays between 0.148% and 0.156%.
 
 | variant | triangles | mean error % | max error % | flipped faces % |
 |---|---|---|---|---|
-| 0 Loop levels | 695 | 0.156 | 1.071 | 0.29 |
-| 1 Loop levels | 2780 | 0.308 | 1.887 | 0.25 |
-| 2 Loop levels | 11120 | 0.352 | 2.168 | 0.17 |
+| 0 Loop levels | 695 | 0.156 | 1.288 | 0.29 |
+| 1 Loop levels | 2780 | 0.309 | 1.887 | 0.29 |
+| 2 Loop levels | 11120 | 0.352 | 2.168 | 0.18 |
 | 3 Loop levels | 44480 | 0.362 | 2.27 | 0.13 |
 
 Each Loop level multiplies the triangles by 4 and makes the surface look smooth, but the mean error

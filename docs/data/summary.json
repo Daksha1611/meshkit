@@ -19,7 +19,7 @@
       "size_saved_pct": 52.1,
       "mean_error_pct": 0.004,
       "max_error_pct": 0.049,
-      "seconds": 16.8,
+      "seconds": 2.8,
       "euler": -3
     },
     {
@@ -30,7 +30,7 @@
       "size_saved_pct": 81.7,
       "mean_error_pct": 0.011,
       "max_error_pct": 0.078,
-      "seconds": 29.6,
+      "seconds": 4.8,
       "euler": -3
     },
     {
@@ -41,7 +41,7 @@
       "size_saved_pct": 90.9,
       "mean_error_pct": 0.019,
       "max_error_pct": 0.179,
-      "seconds": 32.6,
+      "seconds": 5.5,
       "euler": -3
     },
     {
@@ -52,7 +52,7 @@
       "size_saved_pct": 95.6,
       "mean_error_pct": 0.035,
       "max_error_pct": 0.321,
-      "seconds": 34.1,
+      "seconds": 5.8,
       "euler": -3
     },
     {
@@ -61,9 +61,9 @@
       "vertices": 757,
       "obj_kb": 41,
       "size_saved_pct": 98.3,
-      "mean_error_pct": 0.079,
+      "mean_error_pct": 0.08,
       "max_error_pct": 0.675,
-      "seconds": 35.1,
+      "seconds": 5.9,
       "euler": -3
     },
     {
@@ -73,8 +73,8 @@
       "obj_kb": 21,
       "size_saved_pct": 99.1,
       "mean_error_pct": 0.156,
-      "max_error_pct": 1.071,
-      "seconds": 35.3,
+      "max_error_pct": 1.288,
+      "seconds": 6.0,
       "euler": -3
     },
     {
@@ -83,9 +83,9 @@
       "vertices": 203,
       "obj_kb": 10,
       "size_saved_pct": 99.6,
-      "mean_error_pct": 0.303,
+      "mean_error_pct": 0.3,
       "max_error_pct": 1.911,
-      "seconds": 35.5,
+      "seconds": 6.0,
       "euler": -3
     }
   ],
@@ -98,7 +98,7 @@
     "boundary_edges": 223,
     "boundary_loops": 5
   },
-  "bunny_lod_cumulative_seconds": 35.5,
+  "bunny_lod_cumulative_seconds": 6.0,
   "more_models": [
     {
       "model": "spot",
@@ -121,7 +121,7 @@
       "obj_kb": 33,
       "mean_error_pct": 0.059,
       "max_error_pct": 0.52,
-      "seconds": 1.9,
+      "seconds": 0.3,
       "rejected_flip": 4,
       "rejected_link": 0,
       "euler": 2
@@ -133,8 +133,8 @@
       "vertices": 148,
       "obj_kb": 8,
       "mean_error_pct": 0.243,
-      "max_error_pct": 2.516,
-      "seconds": 2.3,
+      "max_error_pct": 2.351,
+      "seconds": 0.4,
       "rejected_flip": 4,
       "rejected_link": 0,
       "euler": 2
@@ -145,9 +145,9 @@
       "triangles": 116,
       "vertices": 60,
       "obj_kb": 3,
-      "mean_error_pct": 0.618,
-      "max_error_pct": 5.088,
-      "seconds": 2.4,
+      "mean_error_pct": 0.595,
+      "max_error_pct": 4.984,
+      "seconds": 0.4,
       "rejected_flip": 5,
       "rejected_link": 2,
       "euler": 2
@@ -171,10 +171,10 @@
       "triangles": 2588,
       "vertices": 1296,
       "obj_kb": 76,
-      "mean_error_pct": 0.006,
+      "mean_error_pct": 0.008,
       "max_error_pct": 0.293,
-      "seconds": 4.0,
-      "rejected_flip": 747,
+      "seconds": 0.8,
+      "rejected_flip": 620,
       "rejected_link": 2,
       "euler": 2
     },
@@ -185,9 +185,9 @@
       "vertices": 325,
       "obj_kb": 18,
       "mean_error_pct": 0.011,
-      "max_error_pct": 0.282,
-      "seconds": 4.9,
-      "rejected_flip": 844,
+      "max_error_pct": 0.329,
+      "seconds": 0.9,
+      "rejected_flip": 665,
       "rejected_link": 3,
       "euler": 2
     },
@@ -197,10 +197,10 @@
       "triangles": 258,
       "vertices": 131,
       "obj_kb": 7,
-      "mean_error_pct": 0.027,
+      "mean_error_pct": 0.026,
       "max_error_pct": 0.437,
-      "seconds": 5.1,
-      "rejected_flip": 859,
+      "seconds": 1.0,
+      "rejected_flip": 668,
       "rejected_link": 3,
       "euler": 2
     }
@@ -216,7 +216,7 @@
         "clustering_triangles": 368,
         "qem_triangles": 368,
         "clustering_mean_pct": 0.844,
-        "qem_mean_pct": 0.286,
+        "qem_mean_pct": 0.283,
         "clustering_max_pct": 4.613,
         "qem_max_pct": 1.911,
         "mean_ratio": 3.0
@@ -279,12 +279,12 @@
         "loop_levels": 0,
         "triangles": 695,
         "mean_error_pct": 0.156,
-        "max_error_pct": 1.071
+        "max_error_pct": 1.288
       },
       {
         "loop_levels": 1,
         "triangles": 2780,
-        "mean_error_pct": 0.308,
+        "mean_error_pct": 0.309,
         "max_error_pct": 1.887
       },
       {
@@ -303,13 +303,13 @@
       "kept_pct": 1.0,
       "triangles": 695,
       "mean_error_pct": 0.156,
-      "max_error_pct": 1.071,
+      "max_error_pct": 1.288,
       "flipped_faces_pct": 0.29,
       "boundary_edges": 115,
       "boundary_length": 0.3479,
       "rejected_flip": 179,
       "rejected_link": 3,
-      "seconds": 18.0
+      "seconds": 5.8
     },
     {
       "ablation": "A1",
@@ -324,7 +324,7 @@
       "boundary_length": 0.3424,
       "rejected_flip": 0,
       "rejected_link": 3,
-      "seconds": 13.5
+      "seconds": 3.8
     },
     {
       "ablation": "A2",
@@ -332,14 +332,14 @@
       "model": "bunny",
       "kept_pct": 2.0,
       "triangles": 1389,
-      "mean_error_pct": 0.079,
+      "mean_error_pct": 0.08,
       "max_error_pct": 0.675,
       "flipped_faces_pct": 0.29,
       "boundary_edges": 131,
       "boundary_length": 0.3437,
       "rejected_flip": 152,
       "rejected_link": 3,
-      "seconds": 18.1,
+      "seconds": 5.7,
       "boundary_length_vs_original_pct": 101.2
     },
     {
@@ -355,7 +355,7 @@
       "boundary_length": 0.3823,
       "rejected_flip": 136,
       "rejected_link": 2,
-      "seconds": 18.3,
+      "seconds": 5.9,
       "boundary_length_vs_original_pct": 112.6
     },
     {
@@ -364,14 +364,14 @@
       "model": "spot",
       "kept_pct": 1.98,
       "triangles": 116,
-      "mean_error_pct": 0.618,
-      "max_error_pct": 5.088,
-      "flipped_faces_pct": 0.0,
+      "mean_error_pct": 0.595,
+      "max_error_pct": 4.984,
+      "flipped_faces_pct": 0.86,
       "boundary_edges": 0,
       "boundary_length": 0.0,
       "rejected_flip": 5,
       "rejected_link": 2,
-      "seconds": 1.5
+      "seconds": 0.4
     },
     {
       "ablation": "A3",
@@ -379,14 +379,14 @@
       "model": "spot",
       "kept_pct": 1.98,
       "triangles": 116,
-      "mean_error_pct": 0.715,
-      "max_error_pct": 4.053,
+      "mean_error_pct": 0.707,
+      "max_error_pct": 3.945,
       "flipped_faces_pct": 0.0,
       "boundary_edges": 0,
       "boundary_length": 0.0,
-      "rejected_flip": 4,
+      "rejected_flip": 3,
       "rejected_link": 3,
-      "seconds": 1.3
+      "seconds": 0.4
     },
     {
       "ablation": "A4",
@@ -395,13 +395,13 @@
       "kept_pct": 1.0,
       "triangles": 695,
       "mean_error_pct": 0.156,
-      "max_error_pct": 1.071,
+      "max_error_pct": 1.288,
       "flipped_faces_pct": 0.29,
       "boundary_edges": 115,
       "boundary_length": 0.3479,
       "rejected_flip": 179,
       "rejected_link": 3,
-      "seconds": 18.1
+      "seconds": 6.1
     },
     {
       "ablation": "A4",
@@ -416,7 +416,7 @@
       "boundary_length": 0.3157,
       "rejected_flip": 112,
       "rejected_link": 7,
-      "seconds": 25.5
+      "seconds": 3.8
     },
     {
       "ablation": "A4",
@@ -431,7 +431,7 @@
       "boundary_length": 0.3351,
       "rejected_flip": 1026,
       "rejected_link": 5,
-      "seconds": 24.6
+      "seconds": 4.7
     },
     {
       "ablation": "A5",
@@ -446,7 +446,7 @@
       "boundary_length": 0.3424,
       "rejected_flip": 0,
       "rejected_link": 3,
-      "seconds": 28.7
+      "seconds": 6.0
     },
     {
       "ablation": "A5",
@@ -461,7 +461,7 @@
       "boundary_length": 0.3475,
       "rejected_flip": 150,
       "rejected_link": 3,
-      "seconds": 30.1
+      "seconds": 6.0
     },
     {
       "ablation": "A5",
@@ -470,28 +470,28 @@
       "kept_pct": 1.0,
       "triangles": 695,
       "mean_error_pct": 0.156,
-      "max_error_pct": 1.071,
+      "max_error_pct": 1.288,
       "flipped_faces_pct": 0.29,
       "boundary_edges": 115,
       "boundary_length": 0.3479,
       "rejected_flip": 179,
       "rejected_link": 3,
-      "seconds": 31.2
+      "seconds": 6.0
     },
     {
       "ablation": "A5",
       "variant": "threshold 0.5",
       "model": "bunny",
       "kept_pct": 1.0,
-      "triangles": 695,
+      "triangles": 694,
       "mean_error_pct": 0.156,
       "max_error_pct": 1.088,
       "flipped_faces_pct": 0.14,
-      "boundary_edges": 119,
-      "boundary_length": 0.348,
+      "boundary_edges": 118,
+      "boundary_length": 0.3476,
       "rejected_flip": 216,
       "rejected_link": 3,
-      "seconds": 48.2
+      "seconds": 6.0
     },
     {
       "ablation": "A6",
@@ -500,7 +500,7 @@
       "kept_pct": 1.0,
       "triangles": 695,
       "mean_error_pct": 0.156,
-      "max_error_pct": 1.071,
+      "max_error_pct": 1.288,
       "flipped_faces_pct": 0.29,
       "boundary_edges": 115,
       "boundary_length": 0.3479,
@@ -514,9 +514,9 @@
       "model": "bunny",
       "kept_pct": 4.0,
       "triangles": 2780,
-      "mean_error_pct": 0.308,
+      "mean_error_pct": 0.309,
       "max_error_pct": 1.887,
-      "flipped_faces_pct": 0.25,
+      "flipped_faces_pct": 0.29,
       "boundary_edges": 230,
       "boundary_length": 0.311,
       "rejected_flip": 0,
@@ -531,7 +531,7 @@
       "triangles": 11120,
       "mean_error_pct": 0.352,
       "max_error_pct": 2.168,
-      "flipped_faces_pct": 0.17,
+      "flipped_faces_pct": 0.18,
       "boundary_edges": 460,
       "boundary_length": 0.3051,
       "rejected_flip": 0,
@@ -559,14 +559,14 @@
     "bunny_original_kb": 2352,
     "bunny_2pct_triangles": 1389,
     "bunny_2pct_kb": 41,
-    "bunny_2pct_mean_error_pct": 0.079,
+    "bunny_2pct_mean_error_pct": 0.08,
     "bunny_2pct_max_error_pct": 0.675,
     "bunny_2pct_size_saved_pct": 98.3,
     "qem_vs_clustering_ratio_min": 3.0,
     "qem_vs_clustering_ratio_max": 4.6
   },
   "runtime_seconds": {
-    "without_ablations": 152,
-    "total": 543
+    "without_ablations": 33,
+    "total": 120
   }
 }
