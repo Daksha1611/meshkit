@@ -9,10 +9,12 @@ original model's bounding-box diagonal so that models of different sizes
 can be compared.
 """
 
+import math
+
 import numpy as np
 from scipy.spatial import cKDTree
 
-from .mesh import bbox_diagonal, face_areas, face_normals
+from .mesh import bbox_diagonal, dot3, face_areas, face_normals, norm3
 
 
 def surface_samples(V, F, n, seed=0):
@@ -25,7 +27,7 @@ def surface_samples(V, F, n, seed=0):
     """
     rng = np.random.default_rng(seed)
     area = face_areas(V, F)
-    faces = rng.choice(len(F), size=n, p=area / area.sum())
+    faces = rng.choice(len(F), size=n, p=area / math.fsum(area))   # fsum: exact, same on every CPU
     r1 = np.sqrt(rng.random(n))[:, None]
     r2 = rng.random(n)[:, None]
     a, b, c = V[F[faces, 0]], V[F[faces, 1]], V[F[faces, 2]]
@@ -50,10 +52,9 @@ def closest_point_on_triangles(P, A, B, C):
     """
     ab, ac = B - A, C - A
     ap, bp, cp = P - A, P - B, P - C
-    dot = lambda x, y: np.einsum("ij,ij->i", x, y)
-    d1, d2 = dot(ab, ap), dot(ac, ap)
-    d3, d4 = dot(ab, bp), dot(ac, bp)
-    d5, d6 = dot(ab, cp), dot(ac, cp)
+    d1, d2 = dot3(ab, ap), dot3(ac, ap)
+    d3, d4 = dot3(ab, bp), dot3(ac, bp)
+    d5, d6 = dot3(ab, cp), dot3(ac, cp)
     vc = d1 * d4 - d3 * d2
     vb = d5 * d2 - d1 * d6
     va = d3 * d6 - d5 * d4
@@ -107,7 +108,7 @@ def point_to_surface(P, V, F, k=16, dense=300000, seed=1):
     for j in range(k):                       # one batch per candidate rank keeps memory small
         tri = F[nearest[:, j]]
         q = closest_point_on_triangles(P, V[tri[:, 0]], V[tri[:, 1]], V[tri[:, 2]])
-        best = np.minimum(best, np.linalg.norm(P - q, axis=1))
+        best = np.minimum(best, norm3(P - q))
 
     if dense:
         samples = surface_samples(V, F, dense, seed)
@@ -130,7 +131,7 @@ def shape_error(V_ref, F_ref, V_new, F_new, n=30000, seed=0):
     d = np.concatenate([point_to_surface(on_ref, V_new, F_new),
                         point_to_surface(on_new, V_ref, F_ref)])
     diag = bbox_diagonal(V_ref)
-    return {"mean_pct": 100.0 * d.mean() / diag, "max_pct": 100.0 * d.max() / diag}
+    return {"mean_pct": 100.0 * math.fsum(d) / len(d) / diag, "max_pct": 100.0 * d.max() / diag}
 
 
 def flipped_fraction(V_ref, F_ref, V_new, F_new):
@@ -143,4 +144,4 @@ def flipped_fraction(V_ref, F_ref, V_new, F_new):
     _, nearest = cKDTree(V_ref[F_ref].mean(axis=1)).query(V_new[F_new].mean(axis=1))
     n_new = face_normals(V_new, F_new)
     n_ref = face_normals(V_ref, F_ref)[nearest]
-    return float(np.mean(np.einsum("ij,ij->i", n_new, n_ref) < 0))
+    return float(np.mean(dot3(n_new, n_ref) < 0))

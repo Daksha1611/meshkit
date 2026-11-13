@@ -8,6 +8,7 @@ files this script writes. Timings depend on the machine that ran it.
 """
 
 import csv
+import math
 import json
 import os
 import shutil
@@ -19,7 +20,7 @@ import matplotlib.pyplot as plt             # noqa: E402
 import numpy as np                          # noqa: E402
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
-from mesh.mesh import (boundary_edges, boundary_loops, compact, drop_doubled_faces, edges,  # noqa: E402
+from mesh.mesh import (boundary_edges, boundary_loops, compact, drop_doubled_faces, edges, norm3,  # noqa: E402
                        euler_characteristic)
 from mesh.metrics import flipped_fraction, shape_error  # noqa: E402
 from mesh.obj_io import load_obj, save_obj  # noqa: E402
@@ -127,7 +128,7 @@ def smooth_on_mesh(values, F, rounds=2):
 
 def boundary_length(V, F):
     B = boundary_edges(F)
-    return float(np.linalg.norm(V[B[:, 0]] - V[B[:, 1]], axis=1).sum()) if len(B) else 0.0
+    return math.fsum(norm3(V[B[:, 0]] - V[B[:, 1]])) if len(B) else 0.0
 
 
 # Simplifier runs with the default settings are reused by several experiments,

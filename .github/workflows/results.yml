@@ -26,6 +26,12 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
 
+      # Results must not depend on the CPU (DEVLOG.md); log which one this is.
+      - name: Show the CPU
+        run: |
+          grep -m1 "model name" /proc/cpuinfo
+          grep -q -m1 avx512f /proc/cpuinfo && echo "AVX-512: yes" || echo "AVX-512: no"
+
       - name: Keep the old summary for comparison
         run: cp results/summary.json "$RUNNER_TEMP/old_summary.json"
 

@@ -170,3 +170,39 @@ my laptop, the default and the stable sort already order 7,667 of Suzanne's face
 **Fix.** `np.argsort(depth, kind="stable")`: equal depths keep their face order everywhere.
 I re-ran the experiments and pushed to main; the check is that `results.yml` on GitHub
 now produces pixel-identical images and therefore opens no pull request.
+
+## 2026-11-13: Simplification results depended on the CPU
+
+**What happened.** After the stable-sort fix I pushed to main and `results.yml` ran again
+(pull request #3). This time 33 *numbers* changed, not just pixels: for example Spot at 2%
+went from a mean error of 0.618% to 0.595%, and Fandisk at 2% from 859 to 668 fold
+rejections, although the code was the same (`flip_threshold` was 0.2 on main; I checked).
+My laptop gives identical numbers run after run.
+
+**How I found the cause.** The CI log showed the runner simplified Spot about 4x faster than
+my laptop, so it was a different CPU. My laptop only has AVX2 (NumPy reports `X86_V3` and
+no `X86_V4`/AVX-512); GitHub's runners vary. NumPy chooses SIMD code by CPU, and some of it
+does not round exactly the same way: `einsum` adds products in a different order, and the
+vectorised `sin`, `cos`, `pow` and `log` use different routines on AVX-512. Switching
+OpenBLAS kernels on my laptop (`OPENBLAS_CORETYPE=Haswell`/`Prescott`) did not change
+anything, so BLAS alone was not it. A difference in the last bit of an edge cost decides
+which of two nearly equal edges is collapsed first, and every later step of the greedy
+algorithm then differs. Flat regions (Fandisk, the bunny's base) are full of such near-ties.
+
+**Fix.** All arithmetic that decides the collapse order, plus the renderer and the error
+measurement, now uses only element-wise `*`, `+`, `/` and `sqrt`, which IEEE 754 defines
+exactly, so they give the same bits on every CPU:
+- `dot3` / `norm3` in `mesh/mesh.py` instead of `einsum` and `np.linalg.norm`;
+- `det3` (cofactor expansion) and `solve3` (Cramer's rule) in `mesh/quadrics.py` instead of
+  `np.linalg.det` / `np.linalg.solve`;
+- `math.fsum` for the sums behind area-weighted sampling and the mean error;
+- in the renderer: rotation as three explicit plane rotations with Python's `math.sin/cos`,
+  light directions with `dot3`, (n·H)^40 by repeated squaring, and the heat map's log values
+  rounded to 9 decimals.
+
+**Before/after on my laptop.** The new arithmetic is itself a third rounding variant, so the
+greedy path changed slightly once more: bunny 2% mean error 0.079% -> 0.080% (max 0.675%
+unchanged), bunny 1% max error 1.071% -> 1.288%, Spot 2% mean 0.618% -> 0.602%, Fandisk 2%
+fold rejections 859 -> 621 and link rejections 3 -> 0. QEM vs clustering is still 3.0x to
+4.6x. README.md and PITCH.md now quote the new numbers. The real test of the fix is that
+GitHub's run reproduces these files exactly and opens no pull request.

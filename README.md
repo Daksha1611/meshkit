@@ -17,7 +17,7 @@ of the bunny, Spot and Fandisk in 3D.
 | Result | Value |
 |---|---|
 | Stanford Bunny at 2% of its triangles | 69,451 → 1,389 triangles, 2,352 KB → 41 KB (98.3% smaller) |
-| Shape change at 2% | mean error 0.079%, max error 0.675% of the bounding-box diagonal |
+| Shape change at 2% | mean error 0.080%, max error 0.675% of the bounding-box diagonal |
 | QEM vs vertex clustering, same triangle count | 3.0× to 4.6× lower mean error for QEM (368 to 14,421 triangles) |
 | Simplify then subdivide | bunny at 1% (695 triangles) + 2 Loop levels → 11,120 triangles; mean error 0.156% → 0.352% |
 | Loop subdivision of an icosahedron | radius spread 1.36%, 0.89%, 0.80% after 1, 2, 3 levels |
@@ -63,7 +63,7 @@ the bounding-box diagonal.
 ## Results gallery
 
 ![Spot at 100, 20, 5 and 2%](results/02_more_models/spot_strip.png)
-Spot the cow: mean error 0.059%, 0.243% and 0.618% at 20%, 5% and 2%.
+Spot the cow: mean error 0.059%, 0.235% and 0.602% at 20%, 5% and 2%.
 
 ![Fandisk at 100, 20, 5 and 2%](results/02_more_models/fandisk_strip.png)
 Fandisk, a CAD part: large flat faces need very few triangles (mean error 0.027% at 2%).
@@ -105,10 +105,10 @@ images and explanations: [`results/07_ablations/README.md`](results/07_ablations
 |---|---|---|
 | A1 fold check (bunny 1%) | on → off | turned-over faces 0.29% → 2.59%; mean error 0.156% → 0.148% (distance cannot see flips) |
 | A2 boundary quadrics (bunny 2%) | weight 1000 → 0 | holes in the base grow (rim length 101.2% → 112.6% of the original); max error 0.675% → 4.375% |
-| A3 area weighting (Spot 2%) | on → off | horns survive without it; mean error 0.618% → 0.715%, max error 5.088% → 4.053% |
+| A3 area weighting (Spot 2%) | on → off | horns survive without it; mean error 0.602% → 0.743%, max error 5.088% → 4.225% |
 | A4 vertex placement (bunny 1%) | optimal / midpoint / endpoint | mean error 0.156% / 0.421% / 0.265% |
 | A5 fold threshold (bunny 1%) | −1 / 0 / 0.2 / 0.5 | turned-over faces 2.59% / 0.43% / 0.29% / 0.14%; mean error 0.148% to 0.156% |
-| A6 Loop levels after simplifying (bunny 1%) | 0 / 1 / 2 / 3 | mean error 0.156% / 0.308% / 0.352% / 0.362% |
+| A6 Loop levels after simplifying (bunny 1%) | 0 / 1 / 2 / 3 | mean error 0.156% / 0.309% / 0.352% / 0.362% |
 
 ## Quick start
 
@@ -129,7 +129,7 @@ The simplify command prints, for example:
 
 ```text
 69451 -> 1389 triangles (2.00%) in <seconds, depends on the machine>s
-mean error 0.079% , max error 0.675% of bbox diagonal
+mean error 0.080% , max error 0.675% of bbox diagonal
 file 2352 KB -> 41 KB
 ```
 
