@@ -71,3 +71,23 @@ right triangle is not among the 16 candidates and the distance is overestimated.
 
 Sanity checks after the fix: Spot against itself gives a mean of about 1e-15%; a copy
 shifted by 1% of the diagonal gives a max of 1.000% and a mean of 0.530%.
+
+## 2026-11-13: Phase 5, Suzanne's Euler number jumped after subdivision
+
+**What happened.** Loop subdivision kept the Euler number on the icosahedron (2 at every
+level) and on Spot, but Suzanne went from 1 to 4 after one level and to 16 after two.
+
+**How I found it.** Counting faces per edge showed one edge of Suzanne used by 4 faces.
+Two of those faces are the same triangle (vertices 70, 135, 136 after merging) stored
+twice with opposite winding. In `suzanne.obj` the quads on lines 1170 and 1171
+(`71 197 139 138` and `71 138 139 198`) share vertex 71 and edge 138-139, so the fan split
+around vertex 71 produces the triangle 71-138-139 from both. Subdivision then splits both
+copies, and the non-manifold edges multiply: 1 -> 5 -> 22.
+
+**Fix.** New helper `drop_doubled_faces` removes every copy of a repeated triangle (removing
+just one copy still leaves an edge with 3 faces). The cleaned Suzanne has 966 triangles,
+0 non-manifold edges, 42 boundary edges and Euler characteristic 0, which stays 0 after
+1 and 2 levels of subdivision. The experiments clean Suzanne this way before subdividing it.
+
+Other numbers from this phase: icosahedron radius spread (std / mean) after 1, 2, 3 levels
+is 1.36%, 0.89%, 0.80%.

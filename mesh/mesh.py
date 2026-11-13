@@ -124,3 +124,16 @@ def duplicate_faces(F):
     is_first = np.zeros(len(F), dtype=bool)
     is_first[first] = True
     return np.nonzero(~is_first)[0]
+
+
+def drop_doubled_faces(V, F):
+    """Remove every copy of any triangle that appears more than once.
+
+    A triangle stored twice (usually back to back, with opposite winding) is a
+    zero-thickness flap: its edge is shared by 4 faces, which is not a valid
+    surface. Removing only one copy would leave a 3-face edge, so both go.
+    suzanne.obj has one such pair (see DEVLOG.md).
+    """
+    _, inverse, counts = np.unique(np.sort(F, axis=1), axis=0, return_inverse=True, return_counts=True)
+    keep = counts[inverse.reshape(-1)] == 1
+    return compact(V, F[keep])
