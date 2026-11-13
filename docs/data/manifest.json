@@ -1,0 +1,147 @@
+{
+  "models": [
+    {
+      "name": "Bunny",
+      "levels": [
+        {
+          "label": "original",
+          "file": "models/bunny_100pct.obj",
+          "triangles": 69451,
+          "kb": 2352,
+          "mean_error_pct": 0.0,
+          "kept_pct": 100
+        },
+        {
+          "label": "50%",
+          "file": "models/bunny_50pct.obj",
+          "triangles": 34726,
+          "kb": 1128,
+          "mean_error_pct": 0.004,
+          "kept_pct": 50.0
+        },
+        {
+          "label": "20%",
+          "file": "models/bunny_20pct.obj",
+          "triangles": 13890,
+          "kb": 431,
+          "mean_error_pct": 0.011,
+          "kept_pct": 20.0
+        },
+        {
+          "label": "10%",
+          "file": "models/bunny_10pct.obj",
+          "triangles": 6944,
+          "kb": 214,
+          "mean_error_pct": 0.019,
+          "kept_pct": 10.0
+        },
+        {
+          "label": "5%",
+          "file": "models/bunny_5pct.obj",
+          "triangles": 3472,
+          "kb": 105,
+          "mean_error_pct": 0.035,
+          "kept_pct": 5.0
+        },
+        {
+          "label": "2%",
+          "file": "models/bunny_2pct.obj",
+          "triangles": 1389,
+          "kb": 41,
+          "mean_error_pct": 0.079,
+          "kept_pct": 2.0
+        },
+        {
+          "label": "1%",
+          "file": "models/bunny_1pct.obj",
+          "triangles": 695,
+          "kb": 21,
+          "mean_error_pct": 0.156,
+          "kept_pct": 1.0
+        },
+        {
+          "label": "0.5%",
+          "file": "models/bunny_0.5pct.obj",
+          "triangles": 346,
+          "kb": 10,
+          "mean_error_pct": 0.303,
+          "kept_pct": 0.5
+        }
+      ]
+    },
+    {
+      "name": "Spot",
+      "levels": [
+        {
+          "label": "original",
+          "file": "models/spot_100pct.obj",
+          "triangles": 5856,
+          "kb": 323,
+          "mean_error_pct": 0.0,
+          "kept_pct": 100
+        },
+        {
+          "label": "20%",
+          "file": "models/spot_20pct.obj",
+          "triangles": 1170,
+          "kb": 33,
+          "mean_error_pct": 0.059,
+          "kept_pct": 20.0
+        },
+        {
+          "label": "5%",
+          "file": "models/spot_5pct.obj",
+          "triangles": 292,
+          "kb": 8,
+          "mean_error_pct": 0.243,
+          "kept_pct": 5.0
+        },
+        {
+          "label": "2%",
+          "file": "models/spot_2pct.obj",
+          "triangles": 116,
+          "kb": 3,
+          "mean_error_pct": 0.618,
+          "kept_pct": 2.0
+        }
+      ]
+    },
+    {
+      "name": "Fandisk",
+      "levels": [
+        {
+          "label": "original",
+          "file": "models/fandisk_100pct.obj",
+          "triangles": 12946,
+          "kb": 371,
+          "mean_error_pct": 0.0,
+          "kept_pct": 100
+        },
+        {
+          "label": "20%",
+          "file": "models/fandisk_20pct.obj",
+          "triangles": 2588,
+          "kb": 76,
+          "mean_error_pct": 0.006,
+          "kept_pct": 20.0
+        },
+        {
+          "label": "5%",
+          "file": "models/fandisk_5pct.obj",
+          "triangles": 646,
+          "kb": 18,
+          "mean_error_pct": 0.011,
+          "kept_pct": 5.0
+        },
+        {
+          "label": "2%",
+          "file": "models/fandisk_2pct.obj",
+          "triangles": 258,
+          "kb": 7,
+          "mean_error_pct": 0.027,
+          "kept_pct": 2.0
+        }
+      ]
+    }
+  ]
+}

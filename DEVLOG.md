@@ -91,3 +91,36 @@ just one copy still leaves an edge with 3 faces). The cleaned Suzanne has 966 tr
 
 Other numbers from this phase: icosahedron radius spread (std / mean) after 1, 2, 3 levels
 is 1.36%, 0.89%, 0.80%.
+
+## 2026-11-13: Phase 9, experiments
+
+**NaN colours in the heat map.** The first full run printed two warnings
+(`invalid value encountered in subtract` inside `np.percentile`, and an invalid cast in the
+renderer). The bunny heat map was the cause: `stanford-bunny.obj` lists 35,947 vertices but
+faces use only 34,834. The other 1,113 have no edges, so their "cheapest collapse cost" is
+infinity, and the percentile of a list containing infinity is NaN. I checked that the stray
+vertices do not change any error figure: all 1,113 lie inside the bounding box of the
+surface, so the diagonal is the same (0.250247) with or without them.
+Fix: the experiment script loads every model through `compact`, so vertex counts in the
+tables now mean "vertices used by faces" (bunny: 34,834), and `heat_colours` ignores
+non-finite values when choosing its colour range. `meshkit.py info` prints both counts.
+
+**Camera for the "from below" view.** The plan says `rot=(90,0,0)` to see the bunny's base.
+In my renderer (Rz·Ry·Rx, camera looking down -z, y up) a +90° turn about x brings the
+*top* of the bunny towards the camera; the first A2 image showed no holes at all. With
+`rot=(-90,0,0)` the base faces the camera and the holes are visible.
+
+**Results that differ from the reference run (reported as measured).**
+- QEM vs clustering: mean error 2.9x to 4.6x lower for QEM (reference: 3.0x to 4.6x).
+  The 2.9x is at the smallest size, 368 triangles.
+- A1: switching the fold check off does *not* raise the mean error at bunny 1% (0.156% on,
+  0.148% off); it raises the share of turned-over faces from 0.29% to 2.59%. The error
+  measure only looks at distance, not facing direction, so it cannot see this damage.
+- A3: Spot at 2% loses its horns with area weighting on, as expected. With it off the horns
+  survive, the mean error rises (0.618% -> 0.715%) and the max error falls (5.088% -> 4.053%).
+  I checked where the max error sits with weighting on: the worst sample is at y = 0.949,
+  just below the top of the model (y max 0.954), i.e. a horn tip; with it off, the worst
+  sample moves to the legs (y = -0.539).
+
+**Run time.** 346 s in total on my laptop, 93 s of it before the ablation study
+(the ablations re-run the full bunny simplification 8 times).

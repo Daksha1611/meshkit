@@ -120,7 +120,9 @@ def heat_colours(values):
     everything else the same colour. Returns (k, 3) RGB in 0..1.
     """
     v = np.log10(np.maximum(np.asarray(values, dtype=float), 1e-30))
-    lo, hi = np.percentile(v, [5, 99])
+    finite = np.isfinite(v)                   # an unused vertex has cost inf
+    lo, hi = np.percentile(v[finite], [5, 99])
+    v = np.where(finite, v, hi)
     t = np.clip((v - lo) / max(hi - lo, 1e-12), 0, 1)[:, None]
     blue, yellow, red = np.array([0.20, 0.35, 0.85]), np.array([0.98, 0.85, 0.25]), np.array([0.85, 0.12, 0.10])
     first_half = blue + (yellow - blue) * np.clip(2 * t, 0, 1)

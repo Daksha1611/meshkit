@@ -11,6 +11,8 @@ import argparse
 import os
 import sys
 
+import numpy as np
+
 from mesh.mesh import boundary_edges, euler_characteristic
 from mesh.metrics import shape_error
 from mesh.obj_io import load_obj, save_obj
@@ -26,7 +28,7 @@ def kilobytes(path):
 def cmd_info(args):
     V, F = load_obj(args.obj)
     print(f"file      {args.obj} ({kilobytes(args.obj):.0f} KB)")
-    print(f"vertices  {len(V)}")
+    print(f"vertices  {len(V)} ({len(np.unique(F))} used by faces)")
     print(f"triangles {len(F)}")
     print(f"euler     {euler_characteristic(V, F)}")
     print(f"boundary  {len(boundary_edges(F))} edges")
