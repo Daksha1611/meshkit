@@ -186,7 +186,22 @@ scripts/                model download and the results-PR helper
 GitHub Actions runs them on Python 3.10, 3.11 and 3.12 for every push and pull request.
 A second workflow, `results.yml`, re-runs the experiments whenever the algorithm code changes and
 opens a pull request with the new images, so GitHub's image diff (2-up, swipe, onion skin) shows
-exactly how the output changed. Timings in the CSV files depend on the machine that last ran the script.
+exactly how the output changed. A pull request is only opened when an image or a number really
+changes: images are compared pixel by pixel, and timings (which depend on the machine) are ignored.
+
+**Example:** [pull request #2](https://github.com/Daksha1611/meshkit/pull/2) comes from the branch
+`demo/flip-threshold-0`, which loosens the fold check (`flip_threshold` 0.2 → 0.0, so a collapse is
+only rejected when a face turns by more than 90°). The workflow regenerated everything on that branch:
+25 image files and 80 numbers changed. The bunny at 2% ends with 1,388 triangles instead of 1,389 and
+its max error rises from 0.675% to 0.706%; at grid size 20 the QEM bunny's max error jumps from
+0.416% to 1.008%. Images that do not depend on the default threshold are not in the diff: the
+original models, the icosahedron, cube and Suzanne subdivisions, and ablation A5 (which sets its
+thresholds explicitly). The pull request is left open as a demonstration; main keeps 0.2.
+
+**Reproducibility:** the results are bit-for-bit identical on different CPUs. The workflow re-ran the
+experiments on GitHub's AMD EPYC 7763 and AMD EPYC 9V74 (AVX-512) runners and reproduced every number
+and pixel of the committed run from an Intel laptop. Getting there took some work; see
+[DEVLOG.md](DEVLOG.md).
 
 The development log, with the bugs and surprises met along the way, is in [DEVLOG.md](DEVLOG.md).
 

@@ -206,3 +206,32 @@ unchanged), bunny 1% max error 1.071% -> 1.288%, Spot 2% mean 0.618% -> 0.602%, 
 fold rejections 859 -> 621 and link rejections 3 -> 0. QEM vs clustering is still 3.0x to
 4.6x. README.md and PITCH.md now quote the new numbers. The real test of the fix is that
 GitHub's run reproduces these files exactly and opens no pull request.
+
+**Confirmed.** After pushing the fix, `results.yml` ran three times on main, on three
+different runners, and each time reproduced every number and every pixel of the run from my
+laptop (Intel Core 7 150U, AVX2), so no pull request was opened. Two runs logged their CPU:
+AMD EPYC 7763 (no AVX-512) and AMD EPYC 9V74 (with AVX-512, the kind of machine that had
+diverged before). A side effect: the hand-written 3x3 arithmetic is faster than the
+general library calls; the test suite went from about 20 s to 7.5 s.
+
+## 2026-11-13: The image-diff demo (pull request #2)
+
+To show what the results workflow is for, the branch `demo/flip-threshold-0` changes one
+default: `flip_threshold` 0.2 -> 0.0 (a collapse is rejected only when a face normal turns by
+more than 90 degrees). Running `results.yml` on that branch opened pull request #2. After the
+determinism fixes above were merged into the branch, the diff is clean: 25 image files and
+80 numbers changed, and every one of them depends on the default threshold.
+
+What the diff shows:
+- Bunny 2%: 1,389 -> 1,388 triangles, max error 0.675% -> 0.706%, mean 0.080% -> 0.079%.
+- Bunny 1%: the fold check rejects 150 collapses instead of 179, turned-over faces rise from
+  0.29% to 0.43%, max error 1.288% -> 1.184%. These are exactly the numbers of the
+  "threshold 0" row of ablation A5 on main, as they should be.
+- QEM at clustering grid 20: max error 0.416% -> 1.008%, a single bad spot, while the mean
+  error is unchanged.
+- Unchanged, as expected: the original renders, all subdivision strips (icosahedron, cube,
+  Suzanne) and A5, which passes its thresholds explicitly.
+
+The first version of this PR (before the fixes) also listed `bunny_100pct.png` and
+`suzanne_strip.png`, which cannot depend on the threshold; that is how the rendering bug above
+was found. The PR stays open as a demonstration; main keeps 0.2.
