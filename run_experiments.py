@@ -722,6 +722,7 @@ def main():
     summary["runtime_seconds"] = {"without_ablations": round(before_ablations), "total": round(time.perf_counter() - start)}
     with open(out("summary.json"), "w") as f:
         json.dump(summary, f, indent=2)
+    shutil.copy(out("summary.json"), os.path.join(DOCS, "data", "summary.json"))  # the web page reads it
     print(f"done in {time.perf_counter() - start:.0f} s (without ablations {before_ablations:.0f} s)")
 
 

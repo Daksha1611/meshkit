@@ -111,8 +111,12 @@ In my renderer (Rz·Ry·Rx, camera looking down -z, y up) a +90° turn about x b
 `rot=(-90,0,0)` the base faces the camera and the holes are visible.
 
 **Results that differ from the reference run (reported as measured).**
-- QEM vs clustering: mean error 2.9x to 4.6x lower for QEM (reference: 3.0x to 4.6x).
-  The 2.9x is at the smallest size, 368 triangles.
+- QEM vs clustering: mean error 3.0x to 4.6x lower for QEM, the same range as the reference.
+  The first runs said 2.9x at the smallest size (368 triangles). That run still loaded the
+  1,113 unused bunny vertices, and vertex clustering averages *every* vertex in a grid cell,
+  used or not, so the stray vertices nudged the baseline's merged positions. After loading
+  through `compact`, the clustering error at grid 8 is 0.844% instead of 0.841% and the
+  ratio rounds to 3.0x. A small effect, but a real side effect of the unused vertices.
 - A1: switching the fold check off does *not* raise the mean error at bunny 1% (0.156% on,
   0.148% off); it raises the share of turned-over faces from 0.29% to 2.59%. The error
   measure only looks at distance, not facing direction, so it cannot see this damage.

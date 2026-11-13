@@ -1,0 +1,46 @@
+name: results
+
+# Re-run every experiment when the algorithm changes and open a pull request
+# with the new images and numbers, so GitHub's image diff shows what changed.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "mesh/**"
+      - "render/**"
+      - "run_experiments.py"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - name: Keep the old summary for comparison
+        run: cp results/summary.json "$RUNNER_TEMP/old_summary.json"
+
+      - name: Run the experiments
+        run: python run_experiments.py
+
+      - name: Write the pull request body
+        run: python scripts/summary_diff.py "$RUNNER_TEMP/old_summary.json" results/summary.json > "$RUNNER_TEMP/pr_body.md"
+
+      - uses: peter-evans/create-pull-request@v6
+        with:
+          branch: auto/update-results
+          title: Update results after code change
+          commit-message: Update results after code change
+          body-path: ${{ runner.temp }}/pr_body.md
+          add-paths: |
+            results/**
+            docs/**

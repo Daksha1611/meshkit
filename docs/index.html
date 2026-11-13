@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>meshkit: mesh simplification and subdivision</title>
+  <meta name="description" content="Quadric error metric simplification and Loop subdivision written from scratch in Python, with an interactive level-of-detail viewer.">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+<main>
+  <header>
+    <h1>meshkit</h1>
+    <p class="lead">Mesh simplification with quadric error metrics and Loop subdivision, written from
+      scratch in Python for my Computer Graphics course project.</p>
+    <p class="headline" id="headline">The Stanford Bunny: <span data-num="bunny_original_triangles"></span>
+      triangles and <span data-num="bunny_original_kb"></span> KB, reduced to
+      <span data-num="bunny_2pct_triangles"></span> triangles and <span data-num="bunny_2pct_kb"></span> KB
+      with a mean surface error of <span data-num="bunny_2pct_mean_error_pct"></span>% of its size.</p>
+    <nav>
+      <a href="https://github.com/Daksha1611/meshkit">Code on GitHub</a>
+      <a href="https://github.com/Daksha1611/meshkit/blob/main/PITCH.md">Project pitch</a>
+      <a href="https://github.com/Daksha1611/meshkit/blob/main/results/07_ablations/README.md">Ablation study</a>
+    </nav>
+  </header>
+
+  <section id="viewer-section">
+    <h2>Try it: drag the slider to change the level of detail</h2>
+    <div class="controls">
+      <label>Model
+        <select id="model"></select>
+      </label>
+      <label class="grow">Level of detail: <strong id="lod-label"></strong>
+        <input type="range" id="lod" min="0" max="0" step="1" value="0">
+      </label>
+      <label><input type="checkbox" id="wire"> Wireframe</label>
+      <label><input type="checkbox" id="smooth"> Smooth shading</label>
+      <label><input type="checkbox" id="spin" checked> Auto-rotate</label>
+    </div>
+    <div id="viewer">
+      <div id="loading">loading…</div>
+    </div>
+    <dl class="stats">
+      <div><dt>Triangles</dt><dd id="s-tris">-</dd></div>
+      <div><dt>File size</dt><dd id="s-kb">-</dd></div>
+      <div><dt>Mean error</dt><dd id="s-err">-</dd></div>
+      <div><dt>Of the original</dt><dd id="s-pct">-</dd></div>
+    </dl>
+    <p class="note">Mean error is the average distance between the simplified and the original surface,
+      as a percentage of the model's bounding-box diagonal. Drag to orbit, scroll to zoom.</p>
+  </section>
+
+  <section>
+    <h2>Before and after</h2>
+    <div class="compare" id="compare">
+      <img src="img/bunny_100pct.png" alt="Original Stanford Bunny">
+      <img src="img/bunny_1pct.png" alt="Bunny simplified to 1% of its triangles, wireframe" class="top" id="compare-top">
+      <input type="range" min="0" max="100" value="50" id="compare-range" aria-label="Move the divider">
+      <div class="divider" id="compare-divider"></div>
+    </div>
+    <p class="note">Left of the divider: the bunny at 1% of its triangles (wireframe).
+      Right: the original scan. Same camera, same scale.</p>
+  </section>
+
+  <section>
+    <h2>Results</h2>
+    <figure><img src="img/bunny_lod_strip.png" alt="Bunny at 100, 10, 2, 1 and 0.5 percent of its triangles">
+      <figcaption>One simplifier run down in stages gives every level of detail.</figcaption></figure>
+    <figure><img src="img/spot_strip.png" alt="Spot the cow at 100, 20, 5 and 2 percent">
+      <figcaption>Spot: the silhouette survives down to 2%; small features go first.</figcaption></figure>
+    <figure><img src="img/fandisk_strip.png" alt="Fandisk CAD model at 100, 20, 5 and 2 percent">
+      <figcaption>Fandisk: large flat faces need very few triangles, so the error stays tiny.</figcaption></figure>
+    <figure><img src="img/heatmap_strip.png" alt="Heat map of collapse cost on Spot and the bunny">
+      <figcaption>Each vertex coloured by its cheapest collapse cost, the number the priority queue sorts by
+        (log scale, averaged twice with neighbours for display).</figcaption></figure>
+    <figure><img src="img/qem_vs_clustering.png" alt="QEM versus vertex clustering at the same triangle count">
+      <figcaption>The baseline, vertex clustering, puts the same grid everywhere; QEM spends triangles where the shape needs them.</figcaption></figure>
+    <div class="two">
+      <figure><img src="img/error_vs_triangles.png" alt="Graph of mean error against triangle count">
+        <figcaption>Mean error at five sizes: QEM against clustering.</figcaption></figure>
+      <figure><img src="img/file_size.png" alt="Bar chart of OBJ file size per level of detail">
+        <figcaption>File size of each bunny level.</figcaption></figure>
+    </div>
+    <h3>Loop subdivision</h3>
+    <figure><img src="img/icosahedron_strip.png" alt="Icosahedron subdivided 0 to 3 times">
+      <figcaption>An icosahedron becomes a sphere.</figcaption></figure>
+    <figure><img src="img/cube_strip.png" alt="Cube subdivided 0 to 3 times">
+      <figcaption>A cube rounds off and shrinks: Loop approximates, it does not interpolate.</figcaption></figure>
+    <figure><img src="img/suzanne_strip.png" alt="Suzanne subdivided 0 to 2 times">
+      <figcaption>Suzanne, low-poly to smooth.</figcaption></figure>
+    <figure><img src="img/bunny_simplify_then_subdivide.png" alt="Bunny simplified to 1 percent then subdivided">
+      <figcaption>Simplify, then subdivide: smoother is not the same as closer to the original.</figcaption></figure>
+  </section>
+
+  <section>
+    <h2>What changes when one part is switched off</h2>
+    <p>Each experiment changes exactly one setting and keeps the model, camera and measurement the same.
+      Full tables: <a href="https://github.com/Daksha1611/meshkit/blob/main/results/07_ablations/README.md">ablation study</a>.</p>
+    <figure><img src="img/A1_fold_check.png" alt="Fold check on and off">
+      <figcaption><strong>A1, fold check.</strong> Without it, many more faces end up turned over. The distance
+        error barely notices, because it measures how far the surface is, not which way it faces.</figcaption></figure>
+    <figure><img src="img/A2_boundary.png" alt="Boundary quadrics on and off, seen from below">
+      <figcaption><strong>A2, boundary quadrics.</strong> Without the extra planes along the rims, the holes in the
+        bunny's base grow, and the worst-case error jumps.</figcaption></figure>
+    <figure><img src="img/A3_area_weighting.png" alt="Area weighting on and off on Spot">
+      <figcaption><strong>A3, area weighting.</strong> With it, Spot's horns (many tiny triangles) are cheap and
+        vanish first; without it they survive, but the body gets a higher mean error.</figcaption></figure>
+    <figure><img src="img/A4_placement.png" alt="Optimal, midpoint and endpoint placement">
+      <figcaption><strong>A4, vertex placement.</strong> Solving for the optimal point beats both simple choices;
+        the edge midpoint is the worst.</figcaption></figure>
+    <figure><img src="img/A5_fold_threshold.png" alt="Four fold-check thresholds">
+      <figcaption><strong>A5, fold threshold.</strong> A stricter threshold rejects more collapses and leaves fewer
+        turned-over faces, at almost no cost in error.</figcaption></figure>
+    <figure><img src="img/A6_subdivision_levels.png" alt="Bunny at 1 percent with 0 to 3 Loop levels">
+      <figcaption><strong>A6, subdivision after simplification.</strong> Each level makes the surface look smoother,
+        but moves it a little further from the original.</figcaption></figure>
+  </section>
+
+  <footer>
+    <p>Models: Stanford Bunny (Stanford 3D Scanning Repository), Spot (Keenan Crane), Fandisk, Suzanne
+      (Blender), via <a href="https://github.com/alecjacobson/common-3d-test-models">common-3d-test-models</a>;
+      see <a href="https://github.com/Daksha1611/meshkit/blob/main/models/SOURCES.md">models/SOURCES.md</a>
+      and check each model's licence before reuse.</p>
+    <p>Papers: Garland &amp; Heckbert, <em>Surface Simplification Using Quadric Error Metrics</em> (SIGGRAPH 1997);
+      Loop, <em>Smooth Subdivision Surfaces Based on Triangles</em> (1987); Rossignac &amp; Borrel (1993).</p>
+    <p>Code © 2026 Daksha Mehta, MIT licence. Viewer built with <a href="https://threejs.org/">three.js</a>.</p>
+  </footer>
+</main>
+<script type="module" src="viewer.js"></script>
+</body>
+</html>
