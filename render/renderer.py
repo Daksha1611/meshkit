@@ -92,10 +92,13 @@ def render(V, F, size=600, rot=(0, 0, 0), base=(0.80, 0.62, 0.45), wire=False,
         base_colour = base_colour[visible]
     colours = (shade(n[visible], base_colour) * 255).astype(np.uint8)
 
-    # 5. painter's algorithm: far (small z) first, near last
+    # 5. painter's algorithm: far (small z) first, near last.
+    # A stable sort keeps faces at exactly equal depth in index order. The
+    # default sort is not stable and NumPy picks its SIMD version by CPU, so
+    # ties came out in a different order on different machines (DEVLOG.md).
     faces = F[visible]
     depth = P[faces, 2].mean(axis=1)
-    order = np.argsort(depth)
+    order = np.argsort(depth, kind="stable")
 
     img = Image.new("RGB", (S, S), background)
     draw = ImageDraw.Draw(img)

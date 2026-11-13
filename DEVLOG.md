@@ -150,3 +150,23 @@ case, and a run started on a branch other than main gets its own PR branch
 Tested locally: the CI copy of `A1_fold_check.png` is restored and reported as unchanged;
 a copy with a painted square is reported as changed. PR #1 was closed because it contained
 no visible change.
+
+## 2026-11-13: The renders were not deterministic across machines
+
+**What happened.** For the image-diff demo I pushed a branch that loosens the fold check
+(`flip_threshold` 0.2 -> 0.0) and ran `results.yml` on it (pull request #2). Most changed
+images made sense, but two could not have been affected: `bunny_100pct.png` (the original,
+unsimplified bunny: 53 pixels differ, by at most 7 colour levels) and `suzanne_strip.png`
+(subdivision only: 754 pixels, up to 53 levels). In PR #1, made on another runner, the
+original bunny had been pixel-identical.
+
+**Cause.** The painter's algorithm sorts faces with `np.argsort(depth)`. The default sort is
+not stable, and NumPy chooses a SIMD sorting routine based on the CPU, so faces at exactly
+the same depth can be drawn in a different order on a different machine. Ties are common:
+Suzanne is mirror-symmetric, so all 15,456 faces of the level-2 mesh share their depth with
+their mirror twin, and 11,512 of the bunny's 69,451 faces share a depth with another face. On
+my laptop, the default and the stable sort already order 7,667 of Suzanne's faces differently.
+
+**Fix.** `np.argsort(depth, kind="stable")`: equal depths keep their face order everywhere.
+I re-ran the experiments and pushed to main; the check is that `results.yml` on GitHub
+now produces pixel-identical images and therefore opens no pull request.
