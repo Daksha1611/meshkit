@@ -53,6 +53,27 @@ def boundary_edges_with_faces(F):
     return directed[rows], rows // 3   # each face contributes 3 rows
 
 
+def boundary_loops(F):
+    """Number of separate holes: groups of boundary edges joined end to end."""
+    B = boundary_edges(F)
+    neighbours = {}
+    for a, b in B.tolist():
+        neighbours.setdefault(a, []).append(b)
+        neighbours.setdefault(b, []).append(a)
+    seen, loops = set(), 0
+    for start in neighbours:
+        if start in seen:
+            continue
+        loops += 1
+        stack = [start]                       # walk around this hole
+        while stack:
+            v = stack.pop()
+            if v not in seen:
+                seen.add(v)
+                stack.extend(neighbours[v])
+    return loops
+
+
 def euler_characteristic(V, F):
     """Euler characteristic chi = V - E + F, counting only vertices that faces use.
 

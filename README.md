@@ -85,7 +85,7 @@ OBJ file size of every bunny level ([`metrics.csv`](results/01_bunny_lod/metrics
 Loop subdivision turns an icosahedron into a sphere.
 
 ![Cube subdivided](results/06_subdivision/cube_strip.png)
-A cube rounds off and shrinks (x range 0.06 to 0.94 after 3 levels): Loop approximates its control
+A cube rounds off and shrinks inside its original box (the x range is in each caption): Loop approximates its control
 mesh instead of passing through it. The shape is lopsided because of how the 12-triangle cube is
 split: two opposite corners touch 6 edges and the other six corners touch 4, so Loop's weights
 pull them differently.

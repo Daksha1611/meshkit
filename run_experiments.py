@@ -19,7 +19,8 @@ import matplotlib.pyplot as plt             # noqa: E402
 import numpy as np                          # noqa: E402
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
-from mesh.mesh import boundary_edges, compact, drop_doubled_faces, edges, euler_characteristic  # noqa: E402
+from mesh.mesh import (boundary_edges, boundary_loops, compact, drop_doubled_faces, edges,  # noqa: E402
+                       euler_characteristic)
 from mesh.metrics import flipped_fraction, shape_error  # noqa: E402
 from mesh.obj_io import load_obj, save_obj  # noqa: E402
 from mesh.simplify import Simplifier, cluster_simplify  # noqa: E402
@@ -191,6 +192,10 @@ def exp_bunny_lod(summary):
 
     summary["bunny_lod"] = rows
     summary["bunny_original_kb"] = round(original_kb)
+    # Euler characteristic chi = 2 - 2*genus - holes for one connected surface.
+    summary["bunny_topology"] = {"vertices_used": len(V), "edges": len(edges(F)), "faces": len(F),
+                                 "euler": euler_characteristic(V, F),
+                                 "boundary_edges": len(boundary_edges(F)), "boundary_loops": boundary_loops(F)}
     summary["bunny_lod_cumulative_seconds"] = round(s.stats["seconds"], 1)
     return meshes
 
