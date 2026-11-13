@@ -8,6 +8,23 @@ changes the mesh.
 import numpy as np
 
 
+def dot3(a, b):
+    """Dot product of 3-vectors stored in the last axis, always added as x, then y, then z.
+
+    Why not np.einsum or np.linalg.norm? They may add the three products in a
+    different order depending on the CPU's SIMD instructions (AVX2 vs AVX-512),
+    so the last bit of the answer differs between machines. That was enough to
+    change which edge the simplifier collapses first (DEVLOG.md). Element-wise
+    * and + are exact IEEE operations and give the same bits on every CPU.
+    """
+    return a[..., 0] * b[..., 0] + a[..., 1] * b[..., 1] + a[..., 2] * b[..., 2]
+
+
+def norm3(a):
+    """Length of 3-vectors stored in the last axis (same bits on every CPU)."""
+    return np.sqrt(dot3(a, a))
+
+
 def _face_edges(F):
     """All 3*m edges of the faces, each with its two indices sorted (smaller first).
 
@@ -94,14 +111,14 @@ def face_normals(V, F, unit=True):
     a, b, c = V[F[:, 0]], V[F[:, 1]], V[F[:, 2]]
     N = np.cross(b - a, c - a)
     if unit:
-        length = np.linalg.norm(N, axis=1, keepdims=True)
+        length = norm3(N)[:, None]
         N = N / np.where(length > 0, length, 1.0)
     return N
 
 
 def face_areas(V, F):
     """Area of each triangle: half the length of the cross product."""
-    return 0.5 * np.linalg.norm(face_normals(V, F, unit=False), axis=1)
+    return 0.5 * norm3(face_normals(V, F, unit=False))
 
 
 def vertex_faces(n, F):
@@ -124,7 +141,7 @@ def compact(V, F):
 
 def bbox_diagonal(V):
     """Length of the bounding-box diagonal. Errors are reported as a % of this."""
-    return float(np.linalg.norm(V.max(axis=0) - V.min(axis=0)))
+    return float(norm3(V.max(axis=0) - V.min(axis=0)))
 
 
 def degenerate_faces(V, F, eps=1e-12):

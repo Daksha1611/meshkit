@@ -4,7 +4,7 @@
 
 ## In one line
 
-I built a tool that removes 98% of a 3D model's triangles while keeping its shape within 0.079%
+I built a tool that removes 98% of a 3D model's triangles while keeping its shape within 0.080%
 of its size on average, and that turns a blocky model into a smooth one, all from scratch.
 
 ## The 60-second version
@@ -13,7 +13,7 @@ of its size on average, and that turns a blocky model into a smooth one, all fro
 a phone, a browser or a VR headset to draw quickly, and the files are large. I implemented the
 standard solution, Garland and Heckbert's quadric error metric simplification, in Python and
 NumPy without any mesh library. On the Stanford Bunny it goes from 69,451 triangles and 2,352 KB
-to 1,389 triangles and 41 KB, and the surface moves by only 0.079% of the model's size on
+to 1,389 triangles and 41 KB, and the surface moves by only 0.080% of the model's size on
 average. I also implemented Loop subdivision, which goes the other way and smooths a coarse mesh,
 and a way to measure how far two surfaces are apart. Against a simple baseline, vertex
 clustering, my simplifier's error is 3.0 to 4.6 times lower at the same triangle count. Then I
@@ -22,7 +22,7 @@ that most of the work is not the formula but keeping the mesh valid and measurin
 
 **30-second version.** I wrote a mesh simplifier and a subdivision-surface tool from scratch. It cuts
 the Stanford Bunny from 69,451 to 1,389 triangles, and from 2,352 KB to 41 KB, with a mean surface
-error of 0.079%. It beats a standard baseline by 3.0 to 4.6 times, it has 26 tests, and every
+error of 0.080%. It beats a standard baseline by 3.0 to 4.6 times, it has 26 tests, and every
 result is reproducible from one script and viewable in 3D on the project's web page.
 
 ## The problem it solves
@@ -32,7 +32,7 @@ result is reproducible from one script and viewable in 3D on the project's web p
   switch between them.
 - **Scanned models on the web and in AR:** a model of a few megabytes is slow to download on a phone.
 - **Concrete example from my results:** the bunny at 2% of its triangles is 41 KB instead of
-  2,352 KB (98.3% smaller), and the mean error is 0.079% of its bounding-box diagonal.
+  2,352 KB (98.3% smaller), and the mean error is 0.080% of its bounding-box diagonal.
 
 ## What I built
 
@@ -60,9 +60,9 @@ result is reproducible from one script and viewable in 3D on the project's web p
 |---|---|---|---|---|
 | Bunny, original | 69,451 | 2,352 KB | | |
 | Bunny, 10% | 6,944 | 214 KB | 0.019% | 0.179% |
-| Bunny, 2% | 1,389 | 41 KB | 0.079% | 0.675% |
-| Bunny, 1% | 695 | 21 KB | 0.156% | 1.071% |
-| Spot, 2% | 116 | 3 KB | 0.618% | 5.088% |
+| Bunny, 2% | 1,389 | 41 KB | 0.080% | 0.675% |
+| Bunny, 1% | 695 | 21 KB | 0.156% | 1.288% |
+| Spot, 2% | 116 | 3 KB | 0.602% | 5.088% |
 | Fandisk, 2% | 258 | 7 KB | 0.027% | 0.437% |
 
 Errors are percentages of the bounding-box diagonal. At grid size 20 the clustering baseline
@@ -108,7 +108,8 @@ times lower. Over five sizes from 368 to 14,421 triangles, QEM's error is 3.0 to
 
 ## Problems I hit and how I solved them
 
-All of these are in [DEVLOG.md](DEVLOG.md) with more detail.
+All of these are in [DEVLOG.md](DEVLOG.md) with more detail; the before/after numbers below are the
+ones recorded there when each problem was found.
 
 1. **A fake 8.9% error on a perfect model.** Measuring distance with the 16 triangles whose centres
    are nearest fails on long thin triangles, which simplified CAD faces are full of (aspect
@@ -122,8 +123,16 @@ All of these are in [DEVLOG.md](DEVLOG.md) with more detail.
    that no face uses. Their collapse cost is infinite, which broke the colour scale. After
    removing them, vertex clustering also changed slightly (it had been averaging those stray
    points), and its error at the smallest size went from 0.841% to 0.844%.
-4. **A camera pointing the wrong way.** The "view from below" for the hole experiment showed the top
-   of the bunny, with no holes in sight: with my rotation convention it needs −90°, not +90°.
+4. **Different results on GitHub's machines.** The workflow that re-runs the experiments on GitHub
+   gave slightly different meshes from my laptop (Spot at 2%: mean error 0.595% there, 0.618% here)
+   and repainted a few pixels of images that should not change at all. Two causes: NumPy's sort for
+   the painter's algorithm is not stable, and library routines like `einsum`, `np.linalg.solve`
+   and vectorised `sin`/`pow` round differently on CPUs with and without AVX-512. A last-bit
+   difference decides which of two nearly equal edges is collapsed first, and the greedy algorithm
+   then takes a different path. I switched to a stable sort and wrote the 3-vector dot product, the
+   3×3 determinant (cofactors) and the solve (Cramer's rule) out by hand with plain `*` and `+`,
+   which are exact on every CPU. Lesson: a greedy algorithm amplifies rounding noise, so
+   reproducibility has to be designed in.
 5. **Checking a speed claim.** I had written in a comment that vectorising the fold check made
    Fandisk 15 times faster. I had not measured it. Measured: 6.6 s with a Python loop against 3.3 s
    vectorised, a 2× gain, so I corrected the comment.
@@ -132,7 +141,7 @@ All of these are in [DEVLOG.md](DEVLOG.md) with more detail.
 
 - **Small features vanish first.** Spot's horns are built from tiny triangles; area weighting makes
   them cheap, so at 2% they are gone (ablation A3). Without area weighting they survive, but the
-  mean error rises from 0.618% to 0.715%.
+  mean error rises from 0.602% to 0.743%.
 - **Loop subdivision shrinks shapes.** It approximates rather than interpolates: after simplifying the
   bunny to 1%, two Loop levels raise the mean error from 0.156% to 0.352%.
 - **Speed.** It is pure Python plus NumPy: running the bunny down through all seven levels of detail

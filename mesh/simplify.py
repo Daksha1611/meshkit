@@ -25,7 +25,7 @@ import time
 
 import numpy as np
 
-from .mesh import bbox_diagonal, compact, edges, vertex_faces
+from .mesh import bbox_diagonal, compact, dot3, edges, norm3, vertex_faces
 from .quadrics import optimal_points_batch, vertex_quadrics
 
 
@@ -116,12 +116,12 @@ class Simplifier:
         P[(tri == a) | (tri == b)] = point           # move the merged corner
         new = np.cross(P[:, 1] - P[:, 0], P[:, 2] - P[:, 0])
 
-        len_old = np.linalg.norm(old, axis=1)
-        len_new = np.linalg.norm(new, axis=1)
+        len_old = norm3(old)
+        len_new = norm3(new)
         if np.any(len_new <= self.min_normal):
             return True                              # face would become a line
         valid = len_old > self.min_normal            # an already-flat face has no direction
-        cos = np.einsum("ij,ij->i", old[valid], new[valid]) / (len_old[valid] * len_new[valid])
+        cos = dot3(old[valid], new[valid]) / (len_old[valid] * len_new[valid])
         return bool(np.any(cos < self.flip_threshold))
 
     def _collapse(self, a, b, shared, point):

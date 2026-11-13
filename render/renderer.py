@@ -13,22 +13,44 @@ It follows the viewing pipeline from the course, step by step:
 Pillow is used only to fill the projected triangles and to save the PNG.
 """
 
+import math
+
 import numpy as np
 from PIL import Image, ImageDraw
 
-KEY_LIGHT = np.array([-0.4, 0.6, 0.7]) / np.linalg.norm([-0.4, 0.6, 0.7])
-FILL_LIGHT = np.array([0.5, -0.3, 0.6]) / np.linalg.norm([0.5, -0.3, 0.6])
+from mesh.mesh import dot3, norm3
+
+# Note: the arithmetic below avoids matrix products (@), np.linalg and NumPy's
+# vectorised sin/cos/pow. Those can round differently on different CPUs, which
+# made the images differ by a few pixels between machines (DEVLOG.md).
+
+
+def _unit(v):
+    v = np.array(v, dtype=float)
+    return v / norm3(v)
+
+
+KEY_LIGHT = _unit([-0.4, 0.6, 0.7])
+FILL_LIGHT = _unit([0.5, -0.3, 0.6])
 VIEW = np.array([0.0, 0.0, 1.0])                 # the camera looks down -z
-HALF = (KEY_LIGHT + VIEW) / np.linalg.norm(KEY_LIGHT + VIEW)   # Blinn half-vector
+HALF = _unit(KEY_LIGHT + VIEW)                   # Blinn half-vector
 
 
-def rotation_matrix(rx, ry, rz):
-    """Rotation by rx, then ry, then rz degrees about the x, y and z axes."""
-    x, y, z = np.radians([rx, ry, rz])
-    Rx = np.array([[1, 0, 0], [0, np.cos(x), -np.sin(x)], [0, np.sin(x), np.cos(x)]])
-    Ry = np.array([[np.cos(y), 0, np.sin(y)], [0, 1, 0], [-np.sin(y), 0, np.cos(y)]])
-    Rz = np.array([[np.cos(z), -np.sin(z), 0], [np.sin(z), np.cos(z), 0], [0, 0, 1]])
-    return Rz @ Ry @ Rx
+def rotate(P, rx, ry, rz):
+    """Rotate points by rx, then ry, then rz degrees about the x, y and z axes.
+
+    This is the matrix product Rz . Ry . Rx from the lectures, applied as
+    three separate steps so each step is just the 2D rotation formula
+    x' = x cos t - y sin t, y' = x sin t + y cos t in one coordinate plane.
+    """
+    x, y, z = P[:, 0], P[:, 1], P[:, 2]
+    c, s = math.cos(math.radians(rx)), math.sin(math.radians(rx))   # about x: (y, z) turn
+    y, z = y * c - z * s, y * s + z * c
+    c, s = math.cos(math.radians(ry)), math.sin(math.radians(ry))   # about y: (z, x) turn
+    x, z = x * c + z * s, -x * s + z * c
+    c, s = math.cos(math.radians(rz)), math.sin(math.radians(rz))   # about z: (x, y) turn
+    x, y = x * c - y * s, x * s + y * c
+    return np.column_stack([x, y, z])
 
 
 def shade(normals, base):
@@ -39,8 +61,10 @@ def shade(normals, base):
     with diffuse from a key light and a weaker fill light, and a Blinn-Phong
     highlight (n . H)^40 from the key light.
     """
-    diffuse = 0.75 * np.maximum(0, normals @ KEY_LIGHT) + 0.30 * np.maximum(0, normals @ FILL_LIGHT)
-    specular = np.maximum(0, normals @ HALF) ** 40
+    diffuse = 0.75 * np.maximum(0, dot3(normals, KEY_LIGHT)) + 0.30 * np.maximum(0, dot3(normals, FILL_LIGHT))
+    h = np.maximum(0, dot3(normals, HALF))
+    h8 = ((h * h) ** 2) ** 2                      # h^40 by repeated squaring: h^8 * h^32
+    specular = h8 * ((h8 * h8) ** 2)
     base = np.broadcast_to(base, normals.shape)
     colour = base * 0.25 + base * 0.75 * diffuse[:, None] + 0.22 * specular[:, None]
     return np.clip(colour, 0, 1)
@@ -57,13 +81,12 @@ def render(V, F, size=600, rot=(0, 0, 0), base=(0.80, 0.62, 0.45), wire=False,
     cull=False draws back faces too (with flipped normals), needed for open
     meshes like Suzanne where you can see inside.
     """
-    R = rotation_matrix(*rot)
     frame = V if frame_V is None else frame_V
     centre = 0.5 * (frame.min(axis=0) + frame.max(axis=0))
 
     # 1. modelling transform: centre, then rotate
-    P = (V - centre) @ R.T
-    framed = (frame - centre) @ R.T
+    P = rotate(V - centre, *rot)
+    framed = rotate(frame - centre, *rot)
 
     # 2. window-to-viewport (orthographic: just drop z)
     S = size * supersample
@@ -76,7 +99,7 @@ def render(V, F, size=600, rot=(0, 0, 0), base=(0.80, 0.62, 0.45), wire=False,
     # face normals in view space
     tri = P[F]
     n = np.cross(tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0])
-    length = np.linalg.norm(n, axis=1)
+    length = norm3(n)
     n = n / np.where(length > 0, length, 1)[:, None]
 
     # 3. back-face culling (or, for open meshes, turn back faces around)
@@ -123,6 +146,9 @@ def heat_colours(values):
     everything else the same colour. Returns (k, 3) RGB in 0..1.
     """
     v = np.log10(np.maximum(np.asarray(values, dtype=float), 1e-30))
+    # Vectorised log10 can differ in the last bit between CPUs; rounding to
+    # 9 decimals (far finer than a colour step) makes the colours identical.
+    v = np.round(v, 9)
     finite = np.isfinite(v)                   # an unused vertex has cost inf
     lo, hi = np.percentile(v[finite], [5, 99])
     v = np.where(finite, v, hi)
